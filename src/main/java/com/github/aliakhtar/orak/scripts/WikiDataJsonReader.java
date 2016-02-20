@@ -1,13 +1,10 @@
 package com.github.aliakhtar.orak.scripts;
 
 import java.io.*;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.github.aliakhtar.orak.util.Logging;
+import com.github.aliakhtar.orak.util.io.*;
 
 public class WikiDataJsonReader
 {
@@ -30,7 +27,10 @@ public class WikiDataJsonReader
             while ( (line = reader.readLine()) != null )
             {
                 i++;
-                log.info(i + ": " + line);
+                com.github.aliakhtar.orak.util.io.Writer.writeOrOverwrite("tmp/" + i + ".json", line );
+
+                if (i == 100)
+                    break;
             }
         }
         catch (Exception e) {throw e;}
