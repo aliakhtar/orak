@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.github.aliakhtar.orak.util.Logging;
 import com.github.aliakhtar.orak.util.io.*;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 public class WikiDataJsonReader
 {
@@ -22,7 +23,7 @@ public class WikiDataJsonReader
     {
         File file = new File(path);
         long start = System.currentTimeMillis();
-        try(BufferedReader reader = new BufferedReader( new FileReader(file) ))
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file))) ))
         {
             int i = 0;
             String line;
