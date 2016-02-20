@@ -4,4 +4,4 @@
 
 git pull
 mvn clean install -DskipTests=true
-./run.sh
+java -Xms27g -Xmx27g -jar target/orak*.jar
