@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.logging.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.aliakhtar.orak.Environment;
 import com.github.aliakhtar.orak.util.Logging;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -41,6 +42,11 @@ public class ElasticSearchEngine implements AutoCloseable
     private final Client client;
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
+    public ElasticSearchEngine(Environment env) throws UnknownHostException
+    {
+        this(env.esEndPoint(), env.esClusterName());
+    }
+
     public ElasticSearchEngine(String endPoint, String clusterName) throws UnknownHostException
     {
         Settings settings = Settings.settingsBuilder()
@@ -48,6 +54,8 @@ public class ElasticSearchEngine implements AutoCloseable
                                              .build();
         client = TransportClient.builder().build()
                          .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(endPoint), PORT));
+
+        log.info("Connected: " + client.toString());
     }
 
 

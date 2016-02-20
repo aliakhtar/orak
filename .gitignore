@@ -84,3 +84,5 @@ IOS/www/
 
 *.out
 .idea/workspace.xml
+
+OrakEnvironment.java
