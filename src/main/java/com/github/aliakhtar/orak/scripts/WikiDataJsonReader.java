@@ -1,7 +1,6 @@
 package com.github.aliakhtar.orak.scripts;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -21,19 +20,21 @@ public class WikiDataJsonReader
         this.path = path;
     }
 
-    public void run() throws IOException
+    public void run() throws Exception
     {
         File file = new File(path);
-        JsonFactory factory = new JsonFactory();
-        JsonParser parser = factory.createParser(file);
-
-        int i = 0;
-        while (parser.nextToken() != JsonToken.END_OBJECT)
+        try(BufferedReader reader = new BufferedReader( new FileReader(file) ))
         {
-            i++;
-            log.info(  i + " : " + parser.getCurrentName());
-            log.info(  i + " : " + parser.getCurrentToken().asString());
+            int i = 0;
+            String line;
+            while ( (line = reader.readLine()) != null )
+            {
+                i++;
+                log.info(i + ": " + line);
+            }
         }
+        catch (Exception e) {throw e;}
+
 
     }
 }
