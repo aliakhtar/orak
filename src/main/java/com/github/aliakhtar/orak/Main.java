@@ -18,6 +18,6 @@ public class Main
 
     public Main() throws Exception
     {
-        new WikiDataJsonReader("/mnt/data/wikidata.json");
+        new WikiDataJsonReader("/mnt/data/wikidata.json").run();
     }
 }
