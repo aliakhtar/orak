@@ -1,0 +1,86 @@
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+.gradle/
+build/
+target/
+
+mods/
+
+.vertx/*
+
+
+# ANDROID / ECLIPSE
+
+*/platforms/android/ant-build/*
+*/platforms/android/ant-gen/*
+*/platforms/android/assets/*
+*/platforms/android/res/*
+*/platforms/android/cordova/*
+*/platforms/android/CordovaLib/*
+*/platforms/android/Libs/*
+*/platforms/android/platform_www/*
+*/www/Realagogo/*
+*/ant-build/*
+/*ant-gen/*
+
+phonegap-prod/www/web/*
+phonegap-dev/www/web/*
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files - android project subfolder
+Android/bin/
+Android/gen/
+Android/assets/
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# IOS / Xcode
+build/*
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+xcuserdata
+profile
+*.moved-aside
+IOS/www/
+
+# OSX
+.DS_Store
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+
+*.out
+.idea/workspace.xml
