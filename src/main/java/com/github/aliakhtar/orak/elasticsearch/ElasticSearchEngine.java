@@ -49,10 +49,11 @@ public class ElasticSearchEngine implements AutoCloseable
 
     public ElasticSearchEngine(String endPoint, String clusterName) throws UnknownHostException
     {
+        log.info("Endpoint: " + endPoint + " , cluster: " + clusterName);
         Settings settings = Settings.settingsBuilder()
                                              .put("cluster.name", clusterName)
                                              .build();
-        client = TransportClient.builder().build()
+        client = TransportClient.builder().settings(settings).build()
                          .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(endPoint), PORT));
 
         log.info("Connected: " + client.toString());
