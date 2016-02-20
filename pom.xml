@@ -111,7 +111,7 @@
                             <argument>-Xmx27g</argument>
                             <argument>-classpath</argument>
                             <classpath/>
-                            <argument>com.github.aliakhtar.Main</argument>
+                            <argument>com.github.aliakhtar.orak.Main</argument>
                         </arguments>
                     </configuration>
                 </plugin>
