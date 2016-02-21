@@ -104,6 +104,10 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
                 value = dateValue(snak);
                 return of("date");
 
+            case "wikibase-item":
+                value = itemValue(snak);
+                return of("item");
+
             case "math":
             case "commonsMedia":
             case "wikibase-property":
@@ -179,5 +183,24 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         {
             return empty();
         }
+    }
+
+    private Optional<JsonObject> itemValue(JsonObject snak)
+    {
+        JsonObject val = snak.getJsonObject("datavalue").getJsonObject("value");
+        if (val == null)
+            return empty();
+
+        String type = val.getString("entity-type");
+        Integer numericId = val.getInteger("numeric-id");
+
+        if (isBlank(type) || numericId == null)
+            return empty();
+
+        String prefix = (type.equals("property")) ? "P" : "Q";
+
+        String id = prefix + numericId;
+
+        return of( new JsonObject().put("item", id));
     }
 }
