@@ -53,11 +53,6 @@
           "index" : "not_analyzed"
         },
 
-        "dataType":
-        {
-          "type": "string",
-          "index" : "no"
-        },
         "claims":
         {
           "type": "nested",
@@ -98,7 +93,8 @@
                 },
                 "date":
                 {
-                  "type": "date"
+                  "type": "date",
+                  "format": "yyyy||yyyy-MM||yyyy-MM-dd"
                 },
                 "geo":
                 {

@@ -59,7 +59,6 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
         JsonObject result = new JsonObject();
         result.put("propertyId", snak.getString("property"))
-              .put("dataType", input.getString("datatype"))
               .put("valueType", valueType.get())
               .put("value", value.get())
               .put("rank", rank)
@@ -155,10 +154,6 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
         if (isBlank(date))
             return empty();
-
-        if (date.contains("-00")) //month & day must be between 1-12
-            date = date.replace("-00","-01");
-
         return of( new JsonObject().put("date", date));
     }
 
