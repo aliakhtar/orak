@@ -97,6 +97,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
             case "string":
                 value = textualValue(snak, "str");
+                log.info("Got val for str: " + value.isPresent());
                 return  of("str");
 
             case  "url":
