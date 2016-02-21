@@ -10,6 +10,7 @@ import com.github.aliakhtar.orak.util.Util;
 import io.vertx.core.json.JsonObject;
 
 import static com.github.aliakhtar.orak.util.Util.isBlank;
+import static com.github.aliakhtar.orak.util.Util.safe;
 import static com.github.aliakhtar.orak.util.Util.trimAndDownCase;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -91,6 +92,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
                 return of("geo");
 
             case "quantity":
+                value = qtyType(snak);
                 return of("quantity");
 
             case "time":
@@ -129,4 +131,28 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         return of( new JsonObject().put("date", date));
     }
 
+    private Optional<JsonObject> qtyType(JsonObject snak)
+    {
+        JsonObject val = snak.getJsonObject("datavalue").getJsonObject("value");
+        String amount = val.getString("amount");
+        String unit = safe( val.getString("unit") );
+
+        if (isBlank(amount))
+            return empty();
+
+        if (amount.startsWith("+") || amount.startsWith("-"))
+            amount = amount.substring(1);
+
+        try
+        {
+            double dblAmt = Double.parseDouble(amount);
+            JsonObject qty = new JsonObject().put("amount", dblAmt).put("unit", unit);
+            return of( new JsonObject().put("quantity", qty) );
+        }
+        catch (Exception e)
+        {
+            log.warning("Failed to parse double in quantity: " + amount + " , " + e.toString());
+            return empty();
+        }
+    }
 }
