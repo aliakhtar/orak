@@ -100,7 +100,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
                 return  of("str");
 
             case  "url":
-                value = textualValue(snak, "txt");
+                value = textualValue(snak, "url");
                 return  of("url");
 
             case  "external-id":
