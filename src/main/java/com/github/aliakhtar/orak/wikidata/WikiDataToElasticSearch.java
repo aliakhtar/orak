@@ -214,8 +214,28 @@ public class WikiDataToElasticSearch
     {
         log.info("Sending to elastic, count: " + count);
 
-        BulkResponse resp = es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.SUMMARY, batch);
-        if (resp.hasFailures())
+        List<JsonObject> items = new ArrayList<>( batch.size() );
+        List<JsonObject> props = new ArrayList<>( batch.size() );
+
+        for (int i = 0; i < batch.size(); i++)
+        {
+            JsonObject item = batch.get(i);
+            String type = item.getString("type");
+            if (type.equals("item"))
+                items.add(item);
+            else
+                props.add(item);
+        }
+
+        BulkResponse resp = (! items.isEmpty()) ? es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.ITEMS, items) : null;
+        if (resp != null && resp.hasFailures())
+        {
+            Writer.writeOrOverwrite("error.log", resp.buildFailureMessage());
+            throw new RuntimeException(resp.buildFailureMessage());
+        }
+
+        resp = (! props.isEmpty()) ? es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.PROPS, props) : null;
+        if (resp != null && resp.hasFailures())
         {
             Writer.writeOrOverwrite("error.log", resp.buildFailureMessage());
             throw new RuntimeException(resp.buildFailureMessage());

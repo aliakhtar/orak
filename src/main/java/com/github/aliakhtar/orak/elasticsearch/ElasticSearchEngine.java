@@ -45,7 +45,8 @@ import java.util.Map;
 public class ElasticSearchEngine implements AutoCloseable
 {
     public static final String WIKIDATA = "wikidata"; //Index for raw wikidata data
-    public static final String SUMMARY = "summary"; //Type for summaries of wikidata data
+    public static final String ITEMS = "items";
+    public static final String PROPS = "props";
 
     private static final int PORT = 9300;
 
