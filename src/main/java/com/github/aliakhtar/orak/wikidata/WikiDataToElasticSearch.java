@@ -238,7 +238,7 @@ public class WikiDataToElasticSearch
             for (int i = 0; i < propClaims.size(); i++ )
             {
                 JsonObject claimInput = propClaims.getJsonObject(i);
-                Optional<JsonObject> claimResult = new ClaimParser(propId, claimInput).call();
+                Optional<JsonObject> claimResult = new ClaimParser(claimInput).call();
                 if (claimResult.isPresent())
                     result.add( claimResult.get() );
             }

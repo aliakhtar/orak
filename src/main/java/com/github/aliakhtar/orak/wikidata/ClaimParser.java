@@ -12,6 +12,7 @@ import static com.github.aliakhtar.orak.util.Util.isBlank;
 import static com.github.aliakhtar.orak.util.Util.trimAndDownCase;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
 
 public class ClaimParser implements Callable<Optional<JsonObject>>
 {
@@ -48,7 +49,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
     private Optional<String> determineValueTypeAndProcessValue(JsonObject snak)
     {
-        String snakType = trimAndDownCase(snak.getString("snaktype");
+        String snakType = trimAndDownCase(snak.getString("snaktype"));
 
         if (isBlank(snakType))
             return of("unknown");
@@ -56,7 +57,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         if ("novalue".equals(snakType))
             return of(  "none" );
 
-        if ("somevalue".equals(snakType)))
+        if ("somevalue".equals(snakType))
             return of("unknown");
 
         if (! snakType.equals("value"))
@@ -70,15 +71,19 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         switch (valueType)
         {
             case "monolingualtext":
+                value = textualValue(snak, "txt");
                 return of( "txt");
 
             case "string":
+                value = textualValue(snak, "str");
                 return  of("str");
 
             case  "url":
+                value = textualValue(snak, "txt");
                 return  of("url");
 
             case  "external-id":
+                value = textualValue(snak, "externalId");
                 return of("externalId");
 
             case "globe-coordinate":
@@ -98,6 +103,17 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
             default:
                 return of(valueType);
         }
+    }
+
+
+    private Optional<JsonObject> textualValue(JsonObject snak, String destKey)
+    {
+        if (destKey.equals("txt") && ! snak.getJsonObject("datavalue").getString("language").equals("en"))
+            return empty();
+
+        String value = snak.getJsonObject("datavalue").getString("value");
+
+        return of( new JsonObject().put(destKey, value) );
     }
 
 }
