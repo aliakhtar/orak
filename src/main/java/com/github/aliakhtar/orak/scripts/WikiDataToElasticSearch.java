@@ -208,7 +208,7 @@ public class WikiDataToElasticSearch
     {
         log.info("Sending to elastic, count: " + count);
 
-        BulkResponse resp = es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.RAW, batch);
+        BulkResponse resp = es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.SUMMARY, batch);
         if (resp.hasFailures())
         {
             Writer.writeOrOverwrite("error.log", resp.buildFailureMessage());
