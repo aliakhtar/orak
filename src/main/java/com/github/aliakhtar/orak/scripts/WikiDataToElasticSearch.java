@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 import com.github.aliakhtar.orak.elasticsearch.ElasticSearchEngine;
 import com.github.aliakhtar.orak.util.Logging;
-import com.github.aliakhtar.orak.util.Util;
-import com.github.aliakhtar.orak.util.io.*;
 import com.github.aliakhtar.orak.util.io.Writer;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -76,9 +74,72 @@ public class WikiDataToElasticSearch
             return;
 
         batch.add(optionalJson.get());
-        Writer.writeOrOverwrite("tmp/" + count + ".json", optionalJson.get().encodePrettily());
         if (batch.size() >= BATCH_SIZE)
             sendOff();
+    }
+
+
+    private JsonObject getSummary(JsonObject data)
+    {
+        String englishLabel = parseEngValue(Optional.ofNullable(data.getJsonObject("labels")));
+        String englishDesc = parseEngValue(Optional.ofNullable(data.getJsonObject("descriptions")));
+        String wikiTitle = parseEngWikiTitle( Optional.ofNullable( data.getJsonObject("sitelinks") ) );
+
+        data.put("label", englishLabel);
+        data.put("description", englishDesc);
+        data.put("wikiTitle", wikiTitle);
+
+        data.remove("labels");
+        data.remove("descriptions");
+        data.remove("sitelinks");
+
+        data.remove("claims");
+        data.remove("lastrevid");
+        data.remove("modified");
+
+        return data;
+    }
+
+    private String parseEngValue(Optional<JsonObject> languageMap)
+    {
+        /* Sample input:
+              "labels" : {
+                "es" : {
+                  "language" : "es",
+                  "value" : "Gabriel González Videla"
+                }
+         */
+        if (! languageMap.isPresent())
+            return  "";
+
+        JsonObject engMap = languageMap.get().getJsonObject("en");
+        if (engMap == null )
+            return  "";
+
+        String value = engMap.getString("value");
+        return (value != null) ? value : "";
+    }
+
+    private String parseEngWikiTitle(Optional<JsonObject> siteLinks)
+    {
+        /* Sample input:
+                "sitelinks" : {
+                    "eswiki" : {
+                      "site" : "eswiki",
+                      "title" : "Gabriel González Videla",
+                      "badges" : [ ]
+                    }
+         */
+
+        if (! siteLinks.isPresent())
+            return "";
+
+        JsonObject engWikiMap = siteLinks.get().getJsonObject("enwiki");
+        if (engWikiMap == null)
+            return "";
+
+        String title = engWikiMap.getString("title");
+        return (title != null) ? title : "";
     }
 
 
