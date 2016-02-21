@@ -271,6 +271,9 @@ public class Util
     public static String stripPaddedZeroDate(String input)
     {
         input = trim(input);
+        if (isBlank(input))
+            return "";
+
         Matcher matcher = DATE_PADDED_ZEROES.matcher(input);
         if (! matcher.find())
             return input;

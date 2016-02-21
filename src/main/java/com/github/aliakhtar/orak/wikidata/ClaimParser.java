@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 //import com.github.aliakhtar.orak.wikidata.util.Logging;
 
 import com.github.aliakhtar.orak.util.Logging;
+import com.github.aliakhtar.orak.util.Util;
 import io.vertx.core.json.JsonObject;
 
 import static com.github.aliakhtar.orak.util.Util.isBlank;
@@ -93,6 +94,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
                 return of("quantity");
 
             case "time":
+                value = dateValue(snak);
                 return of("date");
 
             case "math":
@@ -118,8 +120,13 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
     private Optional<JsonObject> dateValue(JsonObject snak)
     {
-        JsonObject val = snak.getJsonObject("datavalue");
-        return empty();
+        JsonObject val = snak.getJsonObject("datavalue").getJsonObject("value");
+        String date = Util.stripPaddedZeroDate( val.getString("time") );
+
+        if (isBlank(date))
+            return empty();
+
+        return of( new JsonObject().put("date", date));
     }
 
 }
