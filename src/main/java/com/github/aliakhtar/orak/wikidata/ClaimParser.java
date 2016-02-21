@@ -43,9 +43,10 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
             throw new RuntimeException(input.encodePrettily(), e);
         }
 
-        if (! valueType.isPresent() && ! value.isPresent())
+        if (! valueType.isPresent() || ! value.isPresent())
         {
-            log.warning("No value and valueType present: " + snak.encodePrettily());
+            if (! valueType.isPresent())
+                log.warning("No value and valueType present: " + snak.encodePrettily());
             return empty();
         }
 
