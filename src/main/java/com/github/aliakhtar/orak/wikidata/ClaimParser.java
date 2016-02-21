@@ -158,6 +158,15 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         if (i != -1)
             date = date.substring(0, i);
 
+        String[] parts = date.split("-");
+        if (parts[1].equals("00"))
+            parts[1] = "01";
+
+        if (parts[2].equals("00"))
+            parts[2] = "01";
+
+        date = parts[0] + "-" + parts[1] + "-" + parts[2];
+
         return of( new JsonObject().put("date", date));
     }
 
