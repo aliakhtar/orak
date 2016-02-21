@@ -98,6 +98,7 @@ public class WikiDataToElasticSearch
         data.put("wikiTitle", wikiTitle);
         data.put("claims", claims);
 
+        data.remove("aliases");
         data.remove("labels");
         data.remove("descriptions");
         data.remove("sitelinks");
