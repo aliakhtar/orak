@@ -43,11 +43,19 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
             return empty();
         }
 
+        String rankStr = input.getString("rank");
+        int rank = -1;
+        if ("preferred".equals(rankStr))
+            rank = 1;
+        else if ("normal".equals(rankStr))
+            rank = 0;
+
         JsonObject result = new JsonObject();
         result.put("propertyId", snak.getString("property"))
               .put("dataType", input.getString("datatype"))
               .put("valueType", determineValueTypeAndProcessValue(snak))
               .put("value", value)
+              .put("rank", rank)
         ;
 
         return Optional.empty();
