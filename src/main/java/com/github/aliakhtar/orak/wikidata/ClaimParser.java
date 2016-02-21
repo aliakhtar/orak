@@ -14,7 +14,6 @@ import static com.github.aliakhtar.orak.util.Util.safe;
 import static com.github.aliakhtar.orak.util.Util.trimAndDownCase;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
 
 public class ClaimParser implements Callable<Optional<JsonObject>>
 {
@@ -35,7 +34,15 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
             return empty();
 
 
-        Optional<String> valueType = determineValueTypeAndProcessValue(snak);
+        Optional<String> valueType = empty();
+        try
+        {
+            valueType = determineValueTypeAndProcessValue(snak);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(input.encodePrettily(), e);
+        }
 
         if (! valueType.isPresent() || ! value.isPresent())
         {
@@ -113,12 +120,15 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
                 return of("date");
 
             case "wikibase-item":
-                value = itemValue(snak);
+                value = relationship(snak, "item");
+                return of("item");
+
+            case "wikibase-property":
+                value = relationship(snak, "property");
                 return of("item");
 
             case "math":
             case "commonsMedia":
-            case "wikibase-property":
                 return empty();
 
             default:
@@ -193,7 +203,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         }
     }
 
-    private Optional<JsonObject> itemValue(JsonObject snak)
+    private Optional<JsonObject> relationship(JsonObject snak, String key)
     {
         JsonObject val = snak.getJsonObject("datavalue").getJsonObject("value");
         if (val == null)
@@ -209,6 +219,6 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
         String id = prefix + numericId;
 
-        return of( new JsonObject().put("item", id));
+        return of( new JsonObject().put(key, id));
     }
 }

@@ -119,6 +119,11 @@
                   "type":"string",
                   "index": "not_analyzed"
                 },
+                "property":
+                {
+                  "type":"string",
+                  "index": "not_analyzed"
+                },
                 "externalId":
                 {
                   "type": "string",
