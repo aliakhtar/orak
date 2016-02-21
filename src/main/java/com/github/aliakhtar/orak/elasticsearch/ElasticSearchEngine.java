@@ -1,5 +1,6 @@
 package com.github.aliakhtar.orak.elasticsearch;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
@@ -7,6 +8,7 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.aliakhtar.orak.Environment;
 import com.github.aliakhtar.orak.util.Logging;
+import io.vertx.core.json.JsonObject;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -16,6 +18,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.suggest.SuggestRequestBuilder;
+import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -24,6 +27,9 @@ import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionFuzzyBuilder;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.*;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -42,21 +48,18 @@ public class ElasticSearchEngine implements AutoCloseable
     private final Client client;
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public ElasticSearchEngine(Environment env) throws UnknownHostException
+    public ElasticSearchEngine(Environment env) throws Exception
     {
         this(env.esEndPoint(), env.esClusterName());
     }
 
-    public ElasticSearchEngine(String endPoint, String clusterName) throws UnknownHostException
+    public ElasticSearchEngine(String endPoint, String clusterName) throws Exception
     {
-        log.info("Endpoint: " + endPoint + " , cluster: " + clusterName);
         Settings settings = Settings.settingsBuilder()
                                              .put("cluster.name", clusterName)
                                              .build();
         client = TransportClient.builder().settings(settings).build()
                          .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(endPoint), PORT));
-
-        log.info("Connected: " + client.toString());
     }
 
 
@@ -72,11 +75,6 @@ public class ElasticSearchEngine implements AutoCloseable
         return client.admin().indices().delete(req).actionGet().isAcknowledged();
     }
 
-    public void dropIndexIfExists(String name)
-    {
-        dropIndex(name);
-    }
-
     public String put(String index, String type, Map<String, ?> item) throws Exception
     {
         String json = jsonMapper.writeValueAsString(item);
@@ -90,23 +88,16 @@ public class ElasticSearchEngine implements AutoCloseable
     }
 
 
-    public BulkResponse putBulk(String index, String type, Collection<Map<String, ?>> data)
+    public BulkResponse putBulk(String index, String type, Collection<JsonObject> data)
             throws Exception
     {
         BulkRequestBuilder req = client.prepareBulk();
 
-        for (Map<String, ?> item : data)
+        for (JsonObject json : data)
         {
-            String id = item.containsKey("_id") ? String.valueOf((item.get("_id"))) : "";
             IndexRequestBuilder indexReq = client.prepareIndex(index, type);
 
-            if (! id.isEmpty())
-            {
-                item.remove("_id");
-                indexReq.setId(id);
-            }
-
-            indexReq.setSource( jsonMapper.writeValueAsString(item) );
+            indexReq.setSource( jsonMapper.writeValueAsString( json.getMap()  ) );
             req.add( indexReq );
         }
 
