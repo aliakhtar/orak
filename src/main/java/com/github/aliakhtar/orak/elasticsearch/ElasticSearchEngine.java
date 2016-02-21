@@ -37,9 +37,7 @@ import java.util.Map;
 
 public class ElasticSearchEngine implements AutoCloseable
 {
-    private static final String CLUSTER_NAME = "Realagogo_es_xxxx";
-    private static final String DEV_ENDPOINT = "107.20.20.40";
-    private static final String PROD_ENDPOINT = "10.35.202.149";
+    public static final String WIKIDATA = "wikidata"; //Index for raw wikidata data
 
     private static final int PORT = 9300;
 
