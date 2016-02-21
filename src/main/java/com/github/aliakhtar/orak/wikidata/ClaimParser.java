@@ -53,7 +53,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         JsonObject result = new JsonObject();
         result.put("propertyId", snak.getString("property"))
               .put("dataType", input.getString("datatype"))
-              .put("valueType", determineValueTypeAndProcessValue(snak))
+              .put("valueType", valueType)
               .put("value", value)
               .put("rank", rank)
         ;
