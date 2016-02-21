@@ -20,7 +20,7 @@ import static java.util.Optional.ofNullable;
 
 public class WikiDataToElasticSearch
 {
-    private static final int BATCH_SIZE = 10000;
+    private static final int BATCH_SIZE = 500;
 
     private final Logger log = Logging.get(this);
 
