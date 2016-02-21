@@ -125,7 +125,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
             case "wikibase-property":
                 value = relationship(snak, "property");
-                return of("item");
+                return of("property");
 
             case "math":
             case "commonsMedia":
