@@ -14,19 +14,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 public class Util
 {
     private static final Random RAND = new Random();
-    private static final Pattern ALPHABETS = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ALPHABETS = Pattern.compile("[a-z]+", CASE_INSENSITIVE);
 
     private static final Logger log = Logging.get(Util.class);
+
+    private static final Pattern DATE_PADDED_ZEROES = Pattern.compile("\\+[0]+");
+
     public static void sleep(long millis)
     {
         log.info("Sleeping for : " + millis);
@@ -258,5 +265,16 @@ public class Util
                 handler.accept(t);
             }
         });
+    }
+
+
+    public static String stripPaddedZeroDate(String input)
+    {
+        input = trim(input);
+        Matcher matcher = DATE_PADDED_ZEROES.matcher(input);
+        if (! matcher.find())
+            return input;
+
+        return "+" + matcher.replaceFirst("");
     }
 }

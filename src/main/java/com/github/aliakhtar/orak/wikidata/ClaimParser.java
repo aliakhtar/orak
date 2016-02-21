@@ -116,4 +116,10 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         return of( new JsonObject().put(destKey, value) );
     }
 
+    private Optional<JsonObject> dateValue(JsonObject snak)
+    {
+        JsonObject val = snak.getJsonObject("datavalue");
+        return empty();
+    }
+
 }
