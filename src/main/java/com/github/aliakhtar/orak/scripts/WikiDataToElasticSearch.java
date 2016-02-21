@@ -11,6 +11,7 @@ import com.github.aliakhtar.orak.elasticsearch.ElasticSearchEngine;
 import com.github.aliakhtar.orak.util.Logging;
 import com.github.aliakhtar.orak.util.Util;
 import com.github.aliakhtar.orak.util.io.*;
+import com.github.aliakhtar.orak.util.io.Writer;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -41,6 +42,8 @@ public class WikiDataToElasticSearch
         long start = System.currentTimeMillis();
 
         File file = new File(path);
+
+        es.dropIndex(ElasticSearchEngine.RAW);
 
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file))) ))
         {
@@ -103,7 +106,10 @@ public class WikiDataToElasticSearch
 
         BulkResponse resp = es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.RAW, batch);
         if (resp.hasFailures())
+        {
+            Writer.writeOrOverwrite("error.log", resp.buildFailureMessage());
             throw new RuntimeException(resp.buildFailureMessage());
+        }
 
         log.info("Succeeded");
         batch.clear();

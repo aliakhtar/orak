@@ -70,6 +70,7 @@ public class ElasticSearchEngine implements AutoCloseable
 
     public boolean dropIndex(String name)
     {
+        log.warning("Dropping index: " + name);
         DeleteIndexRequest req = client.admin().indices().prepareDelete(name).request();
         return client.admin().indices().delete(req).actionGet().isAcknowledged();
     }
