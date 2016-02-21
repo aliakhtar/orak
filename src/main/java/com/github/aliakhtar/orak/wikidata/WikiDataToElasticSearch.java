@@ -76,6 +76,9 @@ public class WikiDataToElasticSearch
         if (! optionalJson.isPresent())
             return;
 
+        if (count >= 17080)
+            log.info( optionalJson.get().encodePrettily()   );
+
         batch.add( getSummary(optionalJson.get()) );
         if (batch.size() >= BATCH_SIZE)
             sendOff();
