@@ -40,6 +40,9 @@ public class ElasticSearchEngine implements AutoCloseable
     public static final String WIKIDATA = "wikidata"; //Index for raw wikidata data
     public static final String RAW  = "raw"; //Type for raw wikidata  data
 
+
+    private static final JsonObject DISABLED_SOURCE =  new JsonObject().put("enabled", false);
+
     private static final int PORT = 9300;
 
     private final Logger log = Logging.get(this);
@@ -95,9 +98,10 @@ public class ElasticSearchEngine implements AutoCloseable
 
         for (JsonObject json : data)
         {
+            json.put("_source", DISABLED_SOURCE); //don't store source
             IndexRequestBuilder indexReq = client.prepareIndex(index, type);
 
-            indexReq.setSource( jsonMapper.writeValueAsString( json.getMap()  ) );
+            indexReq.setSource( json.encodePrettily() );
             req.add( indexReq );
         }
 

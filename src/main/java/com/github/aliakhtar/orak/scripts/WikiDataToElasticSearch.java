@@ -76,6 +76,7 @@ public class WikiDataToElasticSearch
             return;
 
         batch.add(optionalJson.get());
+        Writer.writeOrOverwrite("tmp/" + count + ".json", optionalJson.get().encodePrettily());
         if (batch.size() >= BATCH_SIZE)
             sendOff();
     }
