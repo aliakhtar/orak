@@ -43,7 +43,7 @@ public class WikiDataToElasticSearch
 
         File file = new File(path);
 
-        es.dropIndex(ElasticSearchEngine.RAW);
+        es.dropIndex(ElasticSearchEngine.WIKIDATA);
 
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file))) ))
         {
