@@ -65,7 +65,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
               .put("rank", rank)
         ;
 
-        return Optional.empty();
+        return Optional.of(result);
     }
 
     private Optional<String> determineValueTypeAndProcessValue(JsonObject snak)
