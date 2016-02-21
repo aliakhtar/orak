@@ -3,7 +3,7 @@ package com.github.aliakhtar.orak;
 import java.util.logging.Logger;
 
 import com.github.aliakhtar.orak.elasticsearch.ElasticSearchEngine;
-import com.github.aliakhtar.orak.scripts.WikiDataToElasticSearch;
+import com.github.aliakhtar.orak.wikidata.WikiDataToElasticSearch;
 import com.github.aliakhtar.orak.util.Logging;
 
 public class Main

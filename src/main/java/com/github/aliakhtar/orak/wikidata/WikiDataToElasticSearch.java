@@ -1,4 +1,4 @@
-package com.github.aliakhtar.orak.scripts;
+package com.github.aliakhtar.orak.wikidata;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -15,6 +15,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.elasticsearch.action.bulk.BulkResponse;
+
+import static java.util.Optional.ofNullable;
 
 public class WikiDataToElasticSearch
 {
@@ -75,24 +77,28 @@ public class WikiDataToElasticSearch
         if (! optionalJson.isPresent())
             return;
 
-        batch.add( getSummary( optionalJson.get() ) );
+        batch.add( getSummary(optionalJson.get()) );
         if (batch.size() >= BATCH_SIZE)
             sendOff();
     }
 
 
-    private JsonObject getSummary(JsonObject data)
+    private JsonObject getSummary(JsonObject data) throws Exception
     {
-        String englishLabel = parseEngValue(Optional.ofNullable(data.getJsonObject("labels")));
-        String englishDesc = parseEngValue(Optional.ofNullable(data.getJsonObject("descriptions")));
-        String wikiTitle = parseEngWikiTitle( Optional.ofNullable( data.getJsonObject("sitelinks") ) );
+        String englishLabel = parseEngValue(ofNullable(data.getJsonObject("labels")));
+        String englishDesc = parseEngValue(ofNullable(data.getJsonObject("descriptions")));
+        String wikiTitle = parseEngWikiTitle( ofNullable(data.getJsonObject("sitelinks")) );
 
-        Optional<JsonObject> origAliases = Optional.ofNullable(data.getJsonObject("aliases"));
+        //Since synonyms filter is used, label is kept as an array and all aliases are grouped into it.
+        JsonArray aliases = parseEngAliases( ofNullable( data.getJsonObject("aliases") ) );
+        aliases.add(englishLabel);
 
-        data.put("label", englishLabel);
+        JsonArray claims = parseClaims( ofNullable( data.getJsonObject("claims") ) );
+
+        data.put("labels", aliases);
         data.put("description", englishDesc);
         data.put("wikiTitle", wikiTitle);
-        data.put("aliases", parseEngAliases(origAliases));
+        data.put("claims", claims);
 
         data.remove("labels");
         data.remove("descriptions");
@@ -217,5 +223,27 @@ public class WikiDataToElasticSearch
 
         log.info("Succeeded");
         batch.clear();
+    }
+
+
+    private JsonArray parseClaims(Optional<JsonObject> claims) throws Exception
+    {
+        if (! claims.isPresent())
+            return new JsonArray();
+
+        JsonArray result = new JsonArray();
+        for (String propId: claims.get().fieldNames())
+        {
+            JsonArray propClaims = claims.get().getJsonArray(propId);
+            for (int i = 0; i < propClaims.size(); i++ )
+            {
+                JsonObject claimInput = propClaims.getJsonObject(i);
+                Optional<JsonObject> claimResult = new ClaimParser(propId, claimInput).call();
+                if (claimResult.isPresent())
+                    result.add( claimResult.get() );
+            }
+        }
+
+        return result;
     }
 }
