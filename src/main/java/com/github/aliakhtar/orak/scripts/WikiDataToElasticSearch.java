@@ -9,7 +9,9 @@ import java.util.logging.Logger;
 
 import com.github.aliakhtar.orak.elasticsearch.ElasticSearchEngine;
 import com.github.aliakhtar.orak.util.Logging;
+import com.github.aliakhtar.orak.util.Util;
 import com.github.aliakhtar.orak.util.io.Writer;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -85,9 +87,12 @@ public class WikiDataToElasticSearch
         String englishDesc = parseEngValue(Optional.ofNullable(data.getJsonObject("descriptions")));
         String wikiTitle = parseEngWikiTitle( Optional.ofNullable( data.getJsonObject("sitelinks") ) );
 
+        Optional<JsonObject> origAliases = Optional.ofNullable(data.getJsonObject("aliases"));
+
         data.put("label", englishLabel);
         data.put("description", englishDesc);
         data.put("wikiTitle", wikiTitle);
+        data.put("aliases", parseEngAliases(origAliases));
 
         data.remove("labels");
         data.remove("descriptions");
@@ -140,6 +145,43 @@ public class WikiDataToElasticSearch
 
         String title = engWikiMap.getString("title");
         return (title != null) ? title : "";
+    }
+
+
+    private JsonArray parseEngAliases(Optional<JsonObject> aliases)
+    {
+        /* Sample input:
+                "aliases": {
+                    "en": [
+                      {
+                        "language": "en",
+                        "value": "NYC"
+                      },
+                      {
+                        "language": "en",
+                        "value": "New York"
+                      },
+                    ],
+         */
+
+        JsonArray result = new JsonArray();
+        if (! aliases.isPresent())
+            return result;
+
+        JsonArray engAliases = aliases.get().getJsonArray("en");
+        if (engAliases == null || engAliases.isEmpty())
+            return result;
+
+        for (int i = 0; i < engAliases.size(); i++)
+        {
+            JsonObject map = engAliases.getJsonObject(i);
+            String alias = map.getString("value");
+
+            if (!Util.isBlank(alias))
+                result.add(alias);
+        }
+
+        return result;
     }
 
 
