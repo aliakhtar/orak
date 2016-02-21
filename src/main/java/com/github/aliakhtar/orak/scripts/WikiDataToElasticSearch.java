@@ -42,7 +42,7 @@ public class WikiDataToElasticSearch
 
         File file = new File(path);
 
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file))) ))
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new BZip2CompressorInputStream(new FileInputStream(file))) ))
         {
             String line;
 
@@ -52,7 +52,12 @@ public class WikiDataToElasticSearch
                 process(line);
             }
         }
-        catch (Exception e) {throw e;}
+
+        if (! batch.isEmpty())
+        {
+            log.info("Sending last " + batch.size() + " items: " );
+            sendOff();
+        }
 
         long elapsed = System.currentTimeMillis() - start;
 
@@ -67,28 +72,10 @@ public class WikiDataToElasticSearch
         if (! optionalJson.isPresent())
             return;
 
-        String type = optionalJson.get().getString("type", "unknown");
-        if (Util.isBlank(type))
-            type = "unknown";
-        else
-            type = Util.trimAndDownCase(type);
-
         batch.add(optionalJson.get());
-        if (batch.size() < BATCH_SIZE)
-            return;
-
-        log.info("Sending to elastic, count: " + count);
-
-        BulkResponse resp = es.putBulk(ElasticSearchEngine.WIKIDATA, type, batch);
-        if (resp.hasFailures())
-            throw new RuntimeException(resp.buildFailureMessage());
-
-        log.info("Succeeded");
-        batch.clear();
-
-
+        if (batch.size() >= BATCH_SIZE)
+            sendOff();
     }
-
 
 
     private Optional<JsonObject> toJson(String line)
@@ -108,5 +95,17 @@ public class WikiDataToElasticSearch
             log.severe("ERROR PARSING: " + e.getMessage() + " , json: " + line);
             return Optional.empty();
         }
+    }
+
+    private void sendOff() throws Exception
+    {
+        log.info("Sending to elastic, count: " + count);
+
+        BulkResponse resp = es.putBulk(ElasticSearchEngine.WIKIDATA, ElasticSearchEngine.RAW, batch);
+        if (resp.hasFailures())
+            throw new RuntimeException(resp.buildFailureMessage());
+
+        log.info("Succeeded");
+        batch.clear();
     }
 }
