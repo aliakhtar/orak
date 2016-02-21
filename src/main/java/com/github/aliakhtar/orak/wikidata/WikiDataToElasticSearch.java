@@ -103,7 +103,6 @@ public class WikiDataToElasticSearch
         data.remove("descriptions");
         data.remove("sitelinks");
 
-        data.remove("claims");
         data.remove("lastrevid");
         data.remove("modified");
 
