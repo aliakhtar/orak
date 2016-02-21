@@ -1,19 +1,18 @@
 package com.github.aliakhtar.orak.wikidata;
 
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.logging.Logger;
-//import com.github.aliakhtar.orak.wikidata.util.Logging;
-
 import com.github.aliakhtar.orak.util.Logging;
 import com.github.aliakhtar.orak.util.Util;
 import io.vertx.core.json.JsonObject;
 
-import static com.github.aliakhtar.orak.util.Util.isBlank;
-import static com.github.aliakhtar.orak.util.Util.safe;
-import static com.github.aliakhtar.orak.util.Util.trimAndDownCase;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.logging.Logger;
+
+import static com.github.aliakhtar.orak.util.Util.*;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+
+//import com.github.aliakhtar.orak.wikidata.util.Logging;
 
 public class ClaimParser implements Callable<Optional<JsonObject>>
 {
@@ -44,9 +43,9 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
             throw new RuntimeException(input.encodePrettily(), e);
         }
 
-        if (! valueType.isPresent() || ! value.isPresent())
+        if (! valueType.isPresent() && ! value.isPresent())
         {
-            log.warning("No value or valueType present: " + snak.encodePrettily());
+            log.warning("No value and valueType present: " + snak.encodePrettily());
             return empty();
         }
 
@@ -97,7 +96,6 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
             case "string":
                 value = textualValue(snak, "str");
-                log.info("Got val for str: " + value.isPresent());
                 return  of("str");
 
             case  "url":
