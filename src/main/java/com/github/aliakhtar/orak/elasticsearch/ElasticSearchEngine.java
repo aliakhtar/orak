@@ -98,7 +98,7 @@ public class ElasticSearchEngine implements AutoCloseable
 
         for (JsonObject json : data)
         {
-            json.put("_source", DISABLED_SOURCE); //don't store source
+            json.put("enabled", false);
             IndexRequestBuilder indexReq = client.prepareIndex(index, type);
 
             indexReq.setSource( json.encodePrettily() );
