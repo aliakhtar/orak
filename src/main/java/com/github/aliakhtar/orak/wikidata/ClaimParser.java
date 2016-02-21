@@ -156,6 +156,12 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         if (isBlank(date))
             return empty();
 
+        if (date.contains("-00-")) //month must be between 1-12
+            date = date.replace("-00-","-01-");
+
+        if (date.contains("-00T")) //same for days
+            date = date.replace("-00T","-01T");
+
         return of( new JsonObject().put("date", date));
     }
 
