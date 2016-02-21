@@ -99,7 +99,6 @@ public class WikiDataToElasticSearch
         data.put("claims", claims);
 
         data.remove("aliases");
-        data.remove("labels");
         data.remove("descriptions");
         data.remove("sitelinks");
 
