@@ -1,0 +1,73 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "synonym": {
+            "tokenizer": "whitespace",
+            "filter": [
+              "synonym"
+            ]
+          }
+        },
+        "filter": {
+          "synonym": {
+            "type": "synonym",
+            "format": "wordnet",
+            "synonyms_path": "wn_s.pl"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "_default_": {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "analyzer" : "synonym"
+        }
+      }
+    }
+  }
+}
+
+
+{
+  name: "astronaut",
+  id: "profession_astranaut_1234",
+  type: "property"
+}
+
+{
+  name: "asteriod",
+  id: "category_asteriod_837373",
+  type: "property"
+}
+
+{
+  name: "discoverer or inventor",
+  id: "discoverer_127727",
+  type: "property"
+}
+
+{
+  name: "bob smith",
+  id: "bob_kjsdhsd",
+  type: "item",
+  claims:
+          [
+            {id: "profession_astranaut_1234"}
+          ]
+}
+
+{
+  name: "Some Asteriod 37373",
+  id: "hujisadhihu",
+  type: "item",
+  claims:
+          [
+            { id: "category_asteriod_837373"},
+            {id: "discoverer_127727", target_id: "bob_kjsdhsd" }
+          ]
+}
