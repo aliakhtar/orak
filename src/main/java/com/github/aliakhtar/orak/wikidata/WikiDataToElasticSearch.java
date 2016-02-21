@@ -250,8 +250,11 @@ public class WikiDataToElasticSearch
             return new JsonArray();
 
         JsonArray result = new JsonArray();
+        int j = 0;
         for (String propId: claims.get().fieldNames())
         {
+            log.info("Claims, " + j + " / " + claims.get().size());
+            j++;
             JsonArray propClaims = claims.get().getJsonArray(propId);
             for (int i = 0; i < propClaims.size(); i++ )
             {
