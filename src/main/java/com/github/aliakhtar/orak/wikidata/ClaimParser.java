@@ -156,7 +156,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
             return empty();
         int i = date.indexOf("T");
         if (i != -1)
-            date = date.substring(i);
+            date = date.substring(0, i);
 
         return of( new JsonObject().put("date", date));
     }
