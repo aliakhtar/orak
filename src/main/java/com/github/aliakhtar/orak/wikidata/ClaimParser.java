@@ -139,10 +139,11 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
     private Optional<JsonObject> textualValue(JsonObject snak, String destKey)
     {
-        if (destKey.equals("txt") && ! snak.getJsonObject("datavalue").getString("language").equals("en"))
+        if (destKey.equals("txt") && ! snak.getJsonObject("datavalue").getJsonObject("value").getString("language").equals("en"))
             return empty();
 
-        String value = snak.getJsonObject("datavalue").getString("value");
+        String value = (! destKey.equals("txt")) ? snak.getJsonObject("datavalue").getString("value")
+                                                 : snak.getJsonObject("datavalue").getJsonObject("value").getString("text");
 
         return of( new JsonObject().put(destKey, value) );
     }
