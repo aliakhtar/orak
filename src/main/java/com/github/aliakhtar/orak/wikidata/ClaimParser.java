@@ -108,8 +108,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
             case "globe-coordinate":
                 //value = geoValue(snak);
-                //return of("geo");
-                return empty(); //skip geos due to illegal values & no time to sort it out
+                return of("geo");
 
             case "quantity":
                 value = qtyType(snak);
