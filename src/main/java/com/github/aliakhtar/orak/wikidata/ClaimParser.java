@@ -152,7 +152,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         JsonObject val = snak.getJsonObject("datavalue").getJsonObject("value");
         String date = Util.stripPaddedZeroDate( val.getString("time") );
 
-        if (isBlank(date))
+        if (isBlank(date) || date.startsWith("-"))
             return empty();
         int i = date.indexOf("T");
         if (i != -1)
