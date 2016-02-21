@@ -37,13 +37,17 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
         Optional<String> valueType = determineValueTypeAndProcessValue(snak);
 
-        if (! valueType.isPresent())
+        if (! valueType.isPresent() || ! value.isPresent())
+        {
+            log.warning("No value or valueType present: " + snak.encodePrettily());
             return empty();
+        }
 
         JsonObject result = new JsonObject();
         result.put("propertyId", snak.getString("property"))
-                .put("dataType", input.getString("datatype"))
-                .put("valueType", determineValueTypeAndProcessValue(snak))
+              .put("dataType", input.getString("datatype"))
+              .put("valueType", determineValueTypeAndProcessValue(snak))
+              .put("value", value)
         ;
 
         return Optional.empty();
@@ -89,6 +93,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
                 return of("externalId");
 
             case "globe-coordinate":
+                value = geoValue(snak);
                 return of("geo");
 
             case "quantity":
@@ -152,6 +157,26 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         catch (Exception e)
         {
             log.warning("Failed to parse double in quantity: " + amount + " , " + e.toString());
+            return empty();
+        }
+    }
+
+    private Optional<JsonObject> geoValue(JsonObject snak)
+    {
+        JsonObject val = snak.getJsonObject("datavalue").getJsonObject("value");
+        try
+        {
+            Double lat = val.getDouble("latitude");
+            Double lon = val.getDouble("longitude");
+
+            if (lat == null || lon == null)
+                return empty();
+
+            String coords = lat + "," + lon;
+            return of(new JsonObject().put("geo", coords));
+        }
+        catch (Exception e)
+        {
             return empty();
         }
     }
