@@ -53,6 +53,7 @@ public class WikiDataToElasticSearch
             {
                 count++;
                 process(line);
+                log.info(count + " , " + batch.size());
             }
         }
 
