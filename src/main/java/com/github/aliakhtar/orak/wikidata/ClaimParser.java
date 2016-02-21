@@ -165,10 +165,7 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
         if (parts[2].equals("00"))
             parts[2] = "01";
 
-        log.info("Orig date: " + date);
         date = parts[0] + "-" + parts[1] + "-" + parts[2];
-
-        log.info("Now: " + date);
 
         return of( new JsonObject().put("date", date));
     }
