@@ -2,6 +2,7 @@ package com.github.aliakhtar.orak.util;
 
 import org.junit.Test;
 
+import static com.github.aliakhtar.orak.util.Util.isValidDate;
 import static com.github.aliakhtar.orak.util.Util.stripPaddedZeroDate;
 import static org.junit.Assert.*;
 
@@ -16,5 +17,12 @@ public class UtilTest
 
         input = "+00000002001-12-31T00:00:00Z";
         assertEquals( "+2001-12-31T00:00:00Z", stripPaddedZeroDate(input) );
+    }
+
+    @Test
+    public void testValidation()
+    {
+        assertTrue( isValidDate("+1974-07-01") );
+        assertFalse(isValidDate("+1995-06-31"));
     }
 }

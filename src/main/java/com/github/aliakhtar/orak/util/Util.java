@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.validator.routines.DateValidator;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -33,6 +34,8 @@ public class Util
     private static final Logger log = Logging.get(Util.class);
 
     private static final Pattern DATE_PADDED_ZEROES = Pattern.compile("\\+[0]+");
+
+    private static final DateValidator DATE_VALIDATOR = new DateValidator();
 
     public static void sleep(long millis)
     {
@@ -280,4 +283,12 @@ public class Util
 
         return "+" + matcher.replaceFirst("");
     }
+
+
+    public static boolean isValidDate(String date)
+    {
+        return DATE_VALIDATOR.validate(date, "+yyyy-MM-dd") != null;
+    }
+
+
 }

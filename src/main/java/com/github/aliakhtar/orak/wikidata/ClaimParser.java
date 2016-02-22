@@ -167,6 +167,9 @@ public class ClaimParser implements Callable<Optional<JsonObject>>
 
         date = parts[0] + "-" + parts[1] + "-" + parts[2];
 
+        if (! Util.isValidDate(date))
+            return empty();
+
         return of( new JsonObject().put("date", date));
     }
 
