@@ -20,7 +20,7 @@ public class Main
         Environment env = Environment.get();
         try(ElasticSearchEngine  es = new ElasticSearchEngine(env))
         {
-            new WikiDataToElasticSearch("/home/ali/wikidata.json.bz2", es).run();
+            //new WikiDataToElasticSearch("/home/ali/wikidata.json.bz2", es).run();
         }
     }
 }

@@ -90,6 +90,12 @@
         </dependency>
 
         <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.6.0</version>
+        </dependency>+
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${jUnitVersion}</version>
@@ -102,7 +108,6 @@
             <version>${mockitoVersion}</version>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 
